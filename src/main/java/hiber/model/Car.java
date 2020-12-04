@@ -1,22 +1,17 @@
 package hiber.model;
 
+import org.springframework.context.annotation.Bean;
+
 import javax.persistence.*;
 
 @Entity
-@Table(name="car")
+@Table(name = "cars")
 public class Car {
    @Id
-   @GeneratedValue(strategy = GenerationType.IDENTITY)
-   @Column(name = "id")
-   private Long id;
-
-   @Column(name = "car_model")
-   private String model;
-
-   @Column(name = "car_series")
+   @Column(name = "series")
    private int series;
-   @OneToOne (cascade = CascadeType.ALL, fetch = FetchType.EAGER,mappedBy = "car")
-   private User user;
+   @Column(name = "model")
+   private String model;
 
    public Car() {
    }
@@ -25,7 +20,6 @@ public class Car {
       this.model = model;
       this.series = series;
    }
-
 
    public String getModel() {
       return model;
@@ -46,10 +40,8 @@ public class Car {
    @Override
    public String toString() {
       return "Car{" +
-              "id=" + id +
+              "series=" + series +
               ", model='" + model + '\'' +
-              ", series=" + series +
               '}';
    }
 }
-

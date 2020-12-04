@@ -1,5 +1,7 @@
 package hiber.model;
 
+import org.hibernate.annotations.Cascade;
+
 import javax.persistence.*;
 
 @Entity
@@ -8,10 +10,13 @@ public class User {
 
    @Id
    @GeneratedValue(strategy = GenerationType.IDENTITY)
+   @Column(name = "id")
    private Long id;
 
    @Column(name = "name")
    private String firstName;
+
+
 
    @Column(name = "last_name")
    private String lastName;
@@ -19,23 +24,25 @@ public class User {
    @Column(name = "email")
    private String email;
 
-
-   @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-   @PrimaryKeyJoinColumn
-   private Car car;
+   @OneToOne(cascade = CascadeType.ALL)
+   @JoinColumn(name = "cars_series")
+   private Car usersCar;
 
    public User() {}
 
-   public User(String firstName, String lastName, String email) {
+   public User(String firstName, String lastName, String email, Car usersCar) {
       this.firstName = firstName;
       this.lastName = lastName;
       this.email = email;
+      this.usersCar = usersCar;
    }
-   public User(String firstName, String lastName, String email, Car car) {
-      this.firstName = firstName;
-      this.lastName = lastName;
-      this.email = email;
-      this.car=car;
+
+   public Car getUsersCar() {
+      return usersCar;
+   }
+
+   public void setUsersCar(Car usersCar) {
+      this.usersCar = usersCar;
    }
 
    public Long getId() {
@@ -69,12 +76,15 @@ public class User {
    public void setEmail(String email) {
       this.email = email;
    }
-   public Car getCar() {
-      return car;
-   }
 
-   public void setCar(Car car) {
-      this.car = car;
+   @Override
+   public String toString() {
+      return "User{" +
+              "id=" + id +
+              ", firstName='" + firstName + '\'' +
+              ", lastName='" + lastName + '\'' +
+              ", email='" + email + '\'' +
+              ", " + usersCar +
+              '}';
    }
-
 }

@@ -1,13 +1,11 @@
 package hiber.dao;
 
+import hiber.model.Car;
 import hiber.model.User;
-import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import java.util.List;
 
@@ -19,56 +17,35 @@ public class UserDaoImp implements UserDao {
 
    @Override
    public void add(User user) {
-      Session session = sessionFactory.openSession();
-      final Transaction transaction = session.getTransaction();
-      try {
-         sessionFactory.getCurrentSession().save(user);
-      } catch (Exception e) {
-         e.printStackTrace();
-         transaction.rollback();
-      } finally {
-         session.close();
-      }
+      sessionFactory.getCurrentSession().save(user);
+   }
 
+   @Override
+   public void addCar(Car car) {
+      sessionFactory.getCurrentSession().save(car);
+   }
+
+   @Override
+   public User getUserCar(String model, int series) {
+      return sessionFactory.getCurrentSession()
+              .createQuery("select u from User u where u.usersCar.series = ?1 and u.usersCar.model = ?2", User.class)
+              .setParameter(1, series)
+              .setParameter(2, model)
+              .getResultStream().findFirst().orElse(null);
    }
 
    @Override
    @SuppressWarnings("unchecked")
    public List<User> listUsers() {
-      Session session = sessionFactory.openSession();
-      final Transaction transaction = session.getTransaction();
-      Query query = null;
-      try {
-         query = sessionFactory.getCurrentSession().createQuery("from User");
-      } catch (Exception e) {
-         e.printStackTrace();
-         transaction.rollback();
-      } finally {
-         session.close();
-      }
+      TypedQuery<User> query = sessionFactory.getCurrentSession().createQuery("from User");
       return query.getResultList();
    }
 
    @Override
-   public List<User> getUsersCar(String model, int series) {
-      Session session = sessionFactory.openSession();
-      final Transaction transaction = session.getTransaction();
-      Query query = null;
-      transaction.begin();
-      try {
-         query = sessionFactory.getCurrentSession().createQuery(
-                 "SELECT u FROM User u " +
-                         "JOIN FETCH u.car " +
-                         "WHERE model = :paramNumber and series = :paramSeries");
-         query.setParameter("paramNumber", model);
-         query.setParameter("paramSeries", series);
-         transaction.commit();
-      } catch (Exception e) {
-         e.printStackTrace();
-         transaction.rollback();
-      } finally {
-         session.close();
-      }
+   @SuppressWarnings("unchecked")
+   public List<Car> listCars() {
+      TypedQuery<Car> query = sessionFactory.getCurrentSession().createQuery("from Car");
       return query.getResultList();
    }
+
 }
